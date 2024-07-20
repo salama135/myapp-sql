@@ -55,3 +55,15 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+# elastic search gems  
+# req -> Add an endpoint for searching through messages of a specific chat. 
+# req -> It should be able to partially match messages’ bodies.
+gem 'elasticsearch-model'
+gem 'elasticsearch-rails'
+
+# Simple, efficient background processing for Ruby.
+# Sidekiq uses threads to handle many jobs at the same time in the same process. 
+# It does not require Rails but will integrate tightly with Rails to make background processing dead simple.
+# req -> You should use Ruby on Rails(V5 or any latest version) for building the API and the workers
+gem "sidekiq", "~> 7.3"
