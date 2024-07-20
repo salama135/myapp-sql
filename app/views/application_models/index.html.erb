@@ -3,7 +3,9 @@
 <ul>
   <% @application_models.each do |app| %>
     <li>
-      <%= app.name %>
+      <a href="/application_models/<%= app.token %>">
+        <%= app.name %>
+      </a>
     </li>
   <% end %>
 </ul>
