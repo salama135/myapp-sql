@@ -1,10 +1,7 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-  # root "application_models#index"
 
-  # get "/application_models", to: "application_models#index"
-  # get "/application_models/:id", to: "application_models#show"
-  resources :application_models, only: [:show, :create, :update] do
+  resources :application_models, only: [:index, :show, :create, :update] do
     resources :chat_models, only: [:create, :show] do
       resources :message_models, only: [:create, :show] do
         collection do 
