@@ -2,12 +2,12 @@ class CreateChatModelJob
   include Sidekiq::Job
 
   def perform(application_token, chat_number)
-    @application_model = ApplicationModel.find_by!(token: application_token)
+    @application = ApplicationModel.find_by!(token: application_token)
     ApplicationModel.transaction do
-      @application_model = ApplicationModel.lock.first
-      @application_model.chats_count = chat_number
-      @application_model.save!
+      @application = ApplicationModel.lock.first
+      @application.chats_count = chat_number
+      @application.save!
     end
-    ChatModel.create!(application_model_id: application_token, number: chat_number)
+    ChatModel.create!(application_model_id: @application.id, number: chat_number, messages_count: 0)
   end
 end
