@@ -1,5 +1,5 @@
 class ApplicationModelsController < ApplicationController
-  before_action :set_application, only: [:show, :update, :chats]
+  before_action :set_application, only: [:show, :update]
   before_action :create_application_model_token, only: [:create] # Generate the token when the application is created
   
   # GET /application_models/
@@ -32,12 +32,6 @@ class ApplicationModelsController < ApplicationController
     end
   end
 
-  # GET /application_models/:token/chats
-  def chats
-    chats = @application_model.chats.order(number: :asc)
-    render json: chats
-  end
-
   private
 
   def create_application_model_token
@@ -48,7 +42,7 @@ class ApplicationModelsController < ApplicationController
   end
 
   def set_application
-    @application_model = ApplicationModel.find_by!(token: params[:id])
+    @application_model = ApplicationModel.find_by!(token: params[:token])
   end
 
   def application_params
