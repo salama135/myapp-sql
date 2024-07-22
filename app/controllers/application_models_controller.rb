@@ -1,51 +1,51 @@
 class ApplicationModelsController < ApplicationController
   before_action :set_application, only: [:show, :update]
-  before_action :create_application_model_token, only: [:create] # Generate the token when the application is created
+  before_action :create_token, only: [:create] # Generate the token when the application is created
   
-  # GET /application_models/
+  # GET /applications/
   def index
-    @application_models = ApplicationModel.all
-    render json: @application_models
+    @applications = ApplicationModel.all
+    render json: @applications
   end
 
-  # GET /application_models/:token
+  # GET /applications/:token
   def show
-    render json: @application_model
+    render json: @application
   end
 
-  # POST /application_models
+  # POST /applications
   def create
-    @application_model = ApplicationModel.new(token: @application_model_token, name: application_params[:name], chats_count: 0)
-    if @application_model.save
-      render json: @application_model, status: :created
+    @application = ApplicationModel.new(token: @token, name: application_params[:name], chats_count: 0)
+    if @application.save
+      render json: @application, status: :created
     else
-      render json: @application_model.errors, status: :unprocessable_entity
+      render json: @application.errors, status: :unprocessable_entity
     end
   end
 
-  # PUT /application_models/:token
+  # PUT /applications/:token
   def update
-    if @application_model.update(application_params)
-      render json: @application_model
+    if @application.update(application_params)
+      render json: @application
     else
-      render json: @application_model.errors, status: :unprocessable_entity
+      render json: @application.errors, status: :unprocessable_entity
     end
   end
 
   private
 
-  def create_application_model_token
+  def create_token
     loop do
-      @application_model_token = SecureRandom.uuid # Use SecureRandom for stronger tokens
-      break @application_model_token unless ApplicationModel.exists?(token: @application_model_token)
+      @token = SecureRandom.uuid # Use SecureRandom for stronger tokens
+      break @token unless ApplicationModel.exists?(token: @token)
     end
   end
 
   def set_application
-    @application_model = ApplicationModel.find_by!(token: params[:token])
+    @application = ApplicationModel.find_by!(token: params[:token])
   end
 
   def application_params
-    params.require(:application_model).permit(:name)
+    params.require(:application).permit(:name)
   end
 end
