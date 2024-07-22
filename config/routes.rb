@@ -1,15 +1,19 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-  get "/application_models", to: "application_models#index"
-  get "/application_models/:token", to: "application_models#show"
-  post "/application_models", to: "application_models#create"
-  put "/application_models/:token", to: "application_models#update"
+  get "/applications", to: "application_models#index"
+  get "/applications/:token", to: "application_models#show"
+  post "/applications", to: "application_models#create"
+  put "/applications/:token", to: "application_models#update"
 
-  post "/chat_models/:application_token/chats", to: "chat_models#create"
-  get "/chat_models/:application_token/chats", to: "chat_models#index"
-  get "/chat_models/:application_token/chats/:number", to: "chat_models#show"
-  get "/chat_models/:application_token/chats/:number/messages", to: "chat_models#messages"
+  post "/applications/:token/chats", to: "chat_models#create"
+  get "/applications/:token/chats", to: "chat_models#index"
+  get "/applications/:token/chats/:number", to: "chat_models#show"
+  get "/applications/:token/chats/:number/messages", to: "chat_models#messages"
 
+  post "/applications/:token/chats/:number/messages", to: "message_models#create"
+  get "/applications/:token/chats/:number/messages", to: "message_models#index"
+  get "/applications/:token/chats/:number/messages/:message_number", to: "message_models#show"
+  
   # resources :application_models, only: [:index, :show, :create, :update] do
   #   resources :chat_models, only: [:create, :show] do
   #     resources :message_models, only: [:create, :show] do
