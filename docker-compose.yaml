@@ -1,0 +1,74 @@
+version: '3.4'
+
+services:
+  database:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+    volumes:
+      - 'database:/var/lib/mysql'
+
+  elasticsearch:
+    image: elasticsearch:7.11.2
+    restart: always
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - 'elasticsearch:/usr/share/elasticsearch/data'
+
+  redis:
+    image: redis:5.0.7
+
+  app:
+    build: .
+    restart: always
+    depends_on:
+      - 'database'
+      - 'elasticsearch'
+      - 'redis'
+    ports:
+      - '3000:3000'
+    volumes:
+      - '.:/app'
+      - 'gem_cache:/usr/local/bundle/gems'
+    environment:
+      DATABASE_NAME_DEV: chat_system_development
+      DATABASE_NAME_TEST: chat_system_test
+      DATABASE_HOST: database
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_SOCKET:
+      REDIS_HOST: redis
+      ELASTICSEARCH_URL: elasticsearch
+      RAILS_ENV: development
+
+  sidekiq:
+    build: .
+    restart: always
+    depends_on:
+      - 'app'
+      - 'database'
+      - 'elasticsearch'
+      - 'redis'
+    volumes:
+      - '.:/app'
+      - 'gem_cache:/usr/local/bundle/gems'
+    environment:
+      DATABASE_NAME_DEV: chat_system_development
+      DATABASE_NAME_TEST: chat_system_test
+      DATABASE_HOST: database
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_SOCKET:
+      REDIS_HOST: redis
+      ELASTICSEARCH_URL: elasticsearch
+      RAILS_ENV: development
+    entrypoint: ./docker-entrypoints/sidekiq-entrypoint.sh
+
+volumes:
+  gem_cache:
+  elasticsearch:
+  database:
