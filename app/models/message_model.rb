@@ -4,5 +4,5 @@ class MessageModel < ApplicationRecord
   
   belongs_to :chat_model
 
-  validates :number, presence: true, uniqueness: { scope: :chat }
+  validates :number, presence: true, uniqueness: { scope: :chat_model }
 end
