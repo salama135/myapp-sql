@@ -1,0 +1,265 @@
+{
+	"info": {
+		"_postman_id": "5734189e-e2b2-4402-ab3f-a28003960902",
+		"name": "Instabug Challenge",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10704889"
+	},
+	"item": [
+		{
+			"name": "ApplicationModel",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"application\": {\"name\": \"app-02\"}}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/applications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"applications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/applications/e3a9d291-7210-48ac-912a-16b434f8e8f9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"applications",
+								"e3a9d291-7210-48ac-912a-16b434f8e8f9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/applications/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"applications",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"application\": {\"name\": \"app-02\"}}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/applications/e3a9d291-7210-48ac-912a-16b434f8e8f9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"applications",
+								"e3a9d291-7210-48ac-912a-16b434f8e8f9"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ChatModel",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/applications/58ad93a1-a113-4fca-a4af-c4a44dcad1c4/chats",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"applications",
+								"58ad93a1-a113-4fca-a4af-c4a44dcad1c4",
+								"chats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/applications/58ad93a1-a113-4fca-a4af-c4a44dcad1c4/chats/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"applications",
+								"58ad93a1-a113-4fca-a4af-c4a44dcad1c4",
+								"chats",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/applications/58ad93a1-a113-4fca-a4af-c4a44dcad1c4/chats/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"applications",
+								"58ad93a1-a113-4fca-a4af-c4a44dcad1c4",
+								"chats",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "messages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/applications/58ad93a1-a113-4fca-a4af-c4a44dcad1c4/chats/1/messages",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"applications",
+								"58ad93a1-a113-4fca-a4af-c4a44dcad1c4",
+								"chats",
+								"1",
+								"messages"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "MessageModel",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"body\": \"This is my message\"}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/applications/58ad93a1-a113-4fca-a4af-c4a44dcad1c4/chats/1/messages",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"applications",
+								"58ad93a1-a113-4fca-a4af-c4a44dcad1c4",
+								"chats",
+								"1",
+								"messages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/applications/58ad93a1-a113-4fca-a4af-c4a44dcad1c4/chats/1/messages",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"applications",
+								"58ad93a1-a113-4fca-a4af-c4a44dcad1c4",
+								"chats",
+								"1",
+								"messages"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
