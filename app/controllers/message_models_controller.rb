@@ -18,8 +18,10 @@ class MessageModelsController < ApplicationController
 	
   # GET /applications/:token/chats/:number/messages/search
 	def search
-    @messages = params[:q].present? ? MessageModel.search(params[:q]) : MessageModel.all
-		render json: @messages.as_json(), status: :ok
+    query = params["query"] || ""
+    res = MessageModel.search(query)
+    p "res: #{res}"
+    render json: res.response["hits"]["hits"]
 	end
 
 	private

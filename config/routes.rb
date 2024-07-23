@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
   post "/applications/:token/chats/:number/messages", to: "message_models#create"
   get "/applications/:token/chats/:number/messages", to: "message_models#index"
+  get "/applications/:token/chats/:number/messages/search", to: "message_models#search"
   get "/applications/:token/chats/:number/messages/:message_number", to: "message_models#show"
   
   # resources :application_models, only: [:index, :show, :create, :update] do

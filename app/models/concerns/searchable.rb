@@ -20,7 +20,7 @@ module Searchable
           }
         }
   
-        self.__elasticsearch__.search(params).records.to_a
+        self.__elasticsearch__.search(params)
       end    
     end
   end
