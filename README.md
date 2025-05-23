@@ -24,19 +24,20 @@ system to achieve that. It is allowed for chats and messages to take time to be 
 should optimize your tables by adding appropriate indices.
 Your app should be containerized. We should only write `docker-compose up` to run the whole
 stack.
-Notes:
-● You’re only asked to build the API. No GUI is required.
-● You should use Ruby on Rails(V5 or any latest version) for building the API and the
+
+## Notes:
+- You’re only asked to build the API. No GUI is required.
+- You should use Ruby on Rails(V5 or any latest version) for building the API and the
 workers. BONUS: You are encouraged to have the endpoints of chats and messages
 creation as a Golang app.
-● The endpoints should be RESTful. You should provide endpoints for creating, updating
+- The endpoints should be RESTful. You should provide endpoints for creating, updating
 and reading applications, chats that belong to a specific application(GET
 /applications/[application_token]/chats) and messages that belong to a specific chat.
 Make sure to have appropriate indices in place for these endpoints to be optimized.
-● Use MySQL as your main datastore. You’re allowed to use any other component you
+- Use MySQL as your main datastore. You’re allowed to use any other component you
 need along with MySQL. You may want to check out REDIS.
-● You should add a Readme containing instructions to run your code.
-● BONUS: Write specs for your code.
+- You should add a Readme containing instructions to run your code.
+- BONUS: Write specs for your code.
 
 
 
