@@ -1,14 +1,21 @@
+require 'redis'
+
 class MessageModelsController < ApplicationController
-	before_action :set_application, only: [:create]
-	before_action :set_chat, only: [:create]
+	before_action :set_application, only: [:create, :search] # Added :search
+	before_action :set_chat, only: [:create, :search] # Added :search
 	before_action :set_message, only: [:show]
 	
 	# POST /applications/:token/chats/:number/messages
   def create
-    chat_number = @chat.number
-    message_number = @chat.messages_count + 1
-    CreateMessageModelJob.perform_async(params[:token], chat_number, message_number, params[:body])
-    render json: { "number": message_number }, status: :ok
+    # @application and @chat are set by before_actions
+    redis_url = ENV['REDIS_URL'] || 'redis://localhost:6379/0'
+    redis = Redis.new(url: redis_url)
+    
+    # Construct the Redis key using both application token and chat number
+    message_number = redis.incr("application:\#{@application.token}:chat:\#{@chat.number}:message_number")
+    
+    CreateMessageModelJob.perform_async(params[:token], @chat.number, message_number, params[:body])
+    render json: { number: message_number }, status: :created
   end
   
 	# GET /applications/:token/chats/:number/messages/:message_number
@@ -19,8 +26,8 @@ class MessageModelsController < ApplicationController
   # GET /applications/:token/chats/:number/messages/search
 	def search
     query = params["query"] || ""
-    res = MessageModel.search(query)
-    p "res: #{res}"
+    # @chat is now set by before_action
+    res = MessageModel.search(query, @chat.id)
     render json: res.response["hits"]["hits"]
 	end
 

@@ -1,12 +1,19 @@
+require 'redis'
+
 class ChatModelsController < ApplicationController
   before_action :set_application
   before_action :set_chat, only: [:show, :messages]
 
   # POST /applications/:token/chats
   def create
-    chat_number = @application.chats_count + 1
+    # @application is set by before_action :set_application
+    redis_url = ENV['REDIS_URL'] || 'redis://localhost:6379/0'
+    redis = Redis.new(url: redis_url)
+    
+    chat_number = redis.incr("application:\#{@application.token}:chat_number")
+    
     CreateChatModelJob.perform_async(params[:token], chat_number)
-    render json: { "number": chat_number }, status: :ok
+    render json: { number: chat_number }, status: :created
   end
   
   # GET /applications/:token/chats
