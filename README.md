@@ -117,5 +117,33 @@ docker-compose run web rspec
 - https://maffan.medium.com/processing-background-jobs-using-sidekiq-gem-in-rails-7-part-i-5c71574ac479
 - https://stackoverflow.com/questions/63497928/ubuntu-wsl-with-docker-could-not-be-found
 
+## Technical Feedback:
 
+### Race conditions:
+- Feedback: Didn't handle concurrency related issues. Hint: There is a race condition in chat/message number generation which might cause the generation of duplicate numbers.
+- Recommendations: Needs to think about having concurrency in their application and how to handle the issues resulting from that, such as race conditions. We would recommend to get a more hands on experience with concurrent applications and learn about common concurrency patterns.
+
+### Unoptimzied database:
+
+#### No indexes:
+- Feedback: Candidate didn't optimize their database schema for all recurring query patterns. Hint: some of the queried columns are not indexed and thus queries will not be efficient.
+- Recommendations: Needs to learn more about indexing and how to use it to optimize performance. We would recommend to read "Indexing for High Performance" from "High Performance MySQL". A summary of this chapter can be found here: https://sayedalesawy.hashnode.dev/high-performance-mysql-ch5-indexing-for-high-performance. A summarized series of the book can be found here: https://sayedalesawy.hashnode.dev/series/high-performance-mysql
+
+#### No unique indexes:
+- Feedback: Candidate didn't enforce uniqueness constraints in their database schema for all usecases and their application is prone to duplication.
+- Recommendations: Go back to the task definition and spot the unique constraints and how to enforce them from the database side.
+
+### Elasticsearch:
+
+#### Unopitmized query/index:
+- Feedback: Candidate didn't use the most suitable way for partial matching regarding performance.
+- Recommendations: We would recommend to check the elasticsearch ngram tokenizer, here: https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-ngram-tokenizer.html
+
+#### Insecure query:
+- Feedback: Candidate didn't satisfy the requirements of the partial matching query. Hint: query might return messages that a user doesn't have access to.
+- Recommendations: We would recommend to try tweaking the query to scope search on only messages that a given user can access.
+
+#### Unoptimized updates to chats count and messages count:
+- Feedback: Candidate's way of updating chats count and messages count causes too much database load. Hint: Updates are done with every new chat/message.
+- Recommendations: We would recommend that the candidates re-reviews the task requirement, specially the part relating to not having to have those counts to be real time and think of how to use that to do more lighter updates of those fields. Hint: cronjobs.
 
