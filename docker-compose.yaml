@@ -1,72 +1,136 @@
-services:
-  database:
-    image: mysql:5.7
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USERNAME: root
-      MYSQL_PASSWORD: root
-    volumes:
-      - 'database:/var/lib/mysql'
+version: '3.8'
 
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: rails_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: rails_development
+      MYSQL_USER: rails_user
+      MYSQL_PASSWORD: rails_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rails_network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: rails_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rails_network
+
+  # Elasticsearch
   elasticsearch:
-    image: elasticsearch:7.11.2
-    restart: always
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: rails_elasticsearch
     environment:
       - discovery.type=single-node
-    volumes:
-      - 'elasticsearch:/usr/share/elasticsearch/data'
-
-  redis:
-    image: redis:5.0.7
-
-  app:
-    build: .
-    restart: always
-    depends_on:
-      - 'database'
-      - 'elasticsearch'
-      - 'redis'
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
-      - '3000:3000'
+      - "9200:9200"
+      - "9300:9300"
     volumes:
-      - '.:/app'
-      - 'gem_cache:/usr/local/bundle/gems'
-    environment:
-      DATABASE_NAME_DEV: chat_system_development
-      DATABASE_NAME_TEST: chat_system_test
-      DATABASE_HOST: database
-      DATABASE_USER: root
-      DATABASE_PASSWORD: root
-      DATABASE_SOCKET:
-      REDIS_HOST: redis
-      ELASTICSEARCH_URL: elasticsearch
-      RAILS_ENV: development
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - rails_network
 
+  # Rails Application
+  rails:
+    build: .
+    container_name: rails_app
+    ports:
+      - "3000:3000"
+    environment:
+      - RAILS_ENV=development
+      - DATABASE_HOST=mysql
+      - DATABASE_NAME=rails_development
+      - DATABASE_USER=rails_user
+      - DATABASE_PASSWORD=rails_password
+      - REDIS_URL=redis://redis:6379/0
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    volumes:
+      - .:/app
+      - bundle_cache:/usr/local/bundle
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    command: >
+      sh -c "
+        bundle install &&
+        rails db:drop db:create db:schema:load db:seed &&
+        rails server -b 0.0.0.0
+      "
+    stdin_open: true
+    tty: true
+    networks:
+      - rails_network
+
+  # Sidekiq Background Jobs
   sidekiq:
     build: .
-    restart: always
-    depends_on:
-      - 'app'
-      - 'database'
-      - 'elasticsearch'
-      - 'redis'
-    volumes:
-      - '.:/app'
-      - 'gem_cache:/usr/local/bundle/gems'
+    container_name: rails_sidekiq
     environment:
-      DATABASE_NAME_DEV: chat_system_development
-      DATABASE_NAME_TEST: chat_system_test
-      DATABASE_HOST: database
-      DATABASE_USER: root
-      DATABASE_PASSWORD: root
-      DATABASE_SOCKET:
-      REDIS_HOST: redis
-      ELASTICSEARCH_URL: elasticsearch
-      RAILS_ENV: development
-    entrypoint: ./docker-entrypoints/sidekiq-entrypoint.sh
+      - RAILS_ENV=development
+      - DATABASE_HOST=mysql
+      - DATABASE_NAME=rails_development
+      - DATABASE_USER=rails_user
+      - DATABASE_PASSWORD=rails_password
+      - REDIS_URL=redis://redis:6379/0
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    volumes:
+      - .:/app
+      - bundle_cache:/usr/local/bundle
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rails:
+        condition: service_started
+    command: >
+      sh -c "
+        bundle install &&
+        bundle exec sidekiq
+      "
+    networks:
+      - rails_network
 
 volumes:
-  gem_cache:
-  elasticsearch:
-  database:
+  mysql_data:
+  redis_data:
+  elasticsearch_data:
+  bundle_cache:
+
+networks:
+  rails_network:
+    driver: bridge
