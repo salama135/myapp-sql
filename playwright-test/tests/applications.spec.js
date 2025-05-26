@@ -3,6 +3,7 @@ const { test, expect } = require('@playwright/test');
 test.describe('Application API Tests', () => {
   const baseUrl = 'http://localhost:3000';
   let applicationId;
+  let applicationToken;
 
   test('should create a new application', async ({ request }) => {
     const appName = 'test-app-' + Date.now();
@@ -20,6 +21,7 @@ test.describe('Application API Tests', () => {
     expect(response.status()).toBe(201);
     const data = await response.json();
     applicationId = data.id; // Store the ID for subsequent tests
+    applicationToken = data.token;
     expect(data.name).toBe(appName);
     expect(data).toHaveProperty('chats_count', 0);
   });
@@ -35,7 +37,7 @@ test.describe('Application API Tests', () => {
   });
 
   test('should get a specific application', async ({ request }) => {
-    const response = await request.get(`${baseUrl}/applications/${applicationId}`);
+    const response = await request.get(`${baseUrl}/applications/${applicationToken}`);
     
     expect(response.status()).toBe(200);
     const data = await response.json();
@@ -45,7 +47,7 @@ test.describe('Application API Tests', () => {
   });
 
   test('should update an application', async ({ request }) => {
-    const response = await request.put(`${baseUrl}/applications/${applicationId}`, {
+    const response = await request.put(`${baseUrl}/applications/${applicationToken}`, {
       data: {
         application: {
           name: 'updated-app-02'
