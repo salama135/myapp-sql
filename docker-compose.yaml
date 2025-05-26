@@ -73,6 +73,8 @@ services:
       - DATABASE_USER=rails_user
       - DATABASE_PASSWORD=rails_password
       - REDIS_URL=redis://redis:6379/0
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
       - ELASTICSEARCH_URL=http://elasticsearch:9200
     volumes:
       - .:/app
@@ -87,8 +89,12 @@ services:
     command: >
       sh -c "
         bundle install &&
+        rm -f /app/tmp/pids/server.pid &&
         rails db:drop db:create db:schema:load db:seed &&
-        rails server -b 0.0.0.0
+        echo 'REDIS_URL env var:' $REDIS_URL &&
+        echo 'Testing Redis connection...' &&
+        ruby -e 'require \"redis\"; puts Redis.new(url: ENV[\"REDIS_URL\"]).ping' &&
+        REDIS_URL=redis://redis:6379/0 rails server -b 0.0.0.0
       "
     stdin_open: true
     tty: true
@@ -106,6 +112,8 @@ services:
       - DATABASE_USER=rails_user
       - DATABASE_PASSWORD=rails_password
       - REDIS_URL=redis://redis:6379/0
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
       - ELASTICSEARCH_URL=http://elasticsearch:9200
     volumes:
       - .:/app
@@ -120,7 +128,11 @@ services:
     command: >
       sh -c "
         bundle install &&
-        bundle exec sidekiq
+        sleep 5 &&
+        echo 'REDIS_URL env var:' $REDIS_URL &&
+        echo 'Testing Redis connection...' &&
+        ruby -e 'require \"redis\"; puts Redis.new(url: ENV[\"REDIS_URL\"]).ping' &&
+        REDIS_URL=redis://redis:6379/0 bundle exec sidekiq
       "
     networks:
       - rails_network
